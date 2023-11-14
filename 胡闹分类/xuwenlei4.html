@@ -1,0 +1,427 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>胡闹分类</title>
+    <style>
+        body {
+            background-image: url("background.jpg");
+            background-size: cover;
+        }
+        h1 {
+            font-family: "华文彩云", sans-serif;
+            color: white;
+            text-align: center;
+        }
+        #score {
+            font-family: "华文彩云", sans-serif;
+            color: rgba(42, 255, 216, 0.98);
+            font-size: 24px;
+            text-align: center;
+        }
+        #timer {
+            font-family: "华文彩云", sans-serif;
+            color: rgba(42, 255, 216, 0.98);
+            font-size: 24px;
+            text-align: center;
+        }
+        #trash {
+            position: absolute;
+            top: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            cursor: move;
+        }
+        #bin1 {
+            position: absolute;
+            bottom: 50px;
+            left: 10%;
+            width: 150px;
+            height:300px;
+        }
+        #bin2 {
+            position: absolute;
+            bottom: 50px;
+            left: 30%;
+            width: 150px;
+            height:300px;
+        }
+        #bin3 {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            width: 150px;
+            height: 300px;
+        }
+        #bin4 {
+            position: absolute;
+            bottom: 50px;
+            left: 70%;
+            width: 150px;
+            height: 300px;
+        }
+        #start {
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 100px;
+            font-family: "华文彩云", sans-serif;
+            font-size: 36px;
+            color: white;
+            background-color: green;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        #pause {
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 100px;
+            font-family: "华文彩云", sans-serif;
+            font-size: 36px;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: none;
+        }
+        #restart {
+            position: absolute;
+            top: 50%;
+            left:75%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 100px;
+            font-family: "华文彩云", sans-serif;
+            font-size: 36px;
+            color: white;
+            background-color: red;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+              #resume {
+        position: absolute;
+        top: 50%;
+        left: 25%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 100px;
+        font-family: "华文彩云", sans-serif;
+        font-size: 36px;
+        color: white;
+        background-color: blue;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: none;
+    }
+         #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+    }
+    #popup {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 300px;
+        background-color: #b2ffdc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px black;
+        text-align: center;
+    }
+    #popup h2 {
+        font-family: "华文楷体", sans-serif;
+        color: #0a0a0a;
+        margin-top: 20px;
+    }
+    #popup p {
+        font-family: "华文楷体", sans-serif;
+        color: green;
+        font-size: 24px;
+        margin-top: 20px;
+    }
+    #popup button {
+        font-family: "华文楷体", sans-serif;
+        color: #f8f7f7;
+        font-size: 24px;
+        width: 200px;
+        height: 50px;
+        background-color: red;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    </style>
+</head>
+<body>
+    <h1>胡闹分类</h1>
+    <div id="score">分数：0</div>
+    <div id="timer">时间：60</div>
+    <img id="trash" src="" draggable="false">
+    <img id="bin1" src="垃圾桶/bin1.png" draggable="false">
+    <img id="bin2" src="垃圾桶/bin2.png" draggable="false">
+    <img id="bin3" src="垃圾桶/bin3.png" draggable="false">
+    <img id="bin4" src="垃圾桶/bin4.png" draggable="false">
+    <button id="start">开始游戏</button>
+    <button id="pause">暂停游戏</button>
+    <button id="restart">重新游戏</button>
+    <button id="resume">恢复游戏</button>
+    <audio id="correct" src="音效/correct.mp3"></audio>
+    <audio id="wrong" src="音效/wrong.mp3"></audio>
+    <audio id="bgm" src="音效/xu.mp3" loop="true"></audio>
+    <div id="overlay">
+    <div id="popup">
+        <h2>游戏结束</h2>
+        <p id="final-score">您的分数是：0</p>
+        <button id="close">关闭</button>
+    </div>
+</div>
+    <script>
+        // 获取页面元素
+        var trash = document.getElementById("trash");
+        var bin1 = document.getElementById("bin1");
+        var bin2 = document.getElementById("bin2");
+        var bin3 = document.getElementById("bin3");
+        var bin4 = document.getElementById("bin4");
+        var score = document.getElementById("score");
+        var timer = document.getElementById("timer");
+        var start = document.getElementById("start");
+        var pause = document.getElementById("pause");
+        var resume = document.getElementById("resume");
+        var restart = document.getElementById("restart");
+        var correct = document.getElementById("correct");
+        var wrong = document.getElementById("wrong");
+        var bgm = document.getElementById("bgm");
+         var overlay = document.getElementById("overlay");
+    var popup = document.getElementById("popup");
+    var finalScore = document.getElementById("final-score");
+    var close = document.getElementById("close");
+
+
+        // 定义变量
+        var scoreValue = 0; // 分数
+        var timerValue = 60; // 时间
+        var trashType = ""; // 垃圾类型
+        var trashIndex = 0; // 垃圾索引
+        var trashList = []; // 垃圾列表
+        var trashCount = 40; // 垃圾总数
+        var trashPerType = 10; // 每种垃圾的数量
+        var trashTypes = ["其他垃圾", "可回收垃圾", "有害垃圾", "厨余垃圾"]; // 垃圾类型列表
+        var trashDragged = false; // 垃圾是否被拖动
+        var gameStarted = false; // 游戏是否开始
+        var gamePaused = false; // 游戏是否暂停
+        var gameEnded = false; // 游戏是否结束
+        var gameTimer = null; // 游戏计时器
+
+        // 初始化垃圾列表
+        for (var i = 0; i < trashCount; i++) {
+            var type = trashTypes[Math.floor(i / trashPerType)]; // 根据索引计算垃圾类型
+            var src = type + "/" + ((i % trashPerType) + 1) + ".jpg"; // 根据类型和索引生成垃圾图片路径
+            trashList.push({type: type, src: src}); // 将垃圾对象添加到垃圾列表中
+        }
+
+        // 打乱垃圾列表
+        function shuffle(array) {
+            var currentIndex = array.length, temporaryValue, randomIndex;
+            while (0 !== currentIndex) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+            return array;
+        }
+        trashList = shuffle(trashList);
+
+        // 生成一个随机的垃圾
+        function generateTrash() {
+            if (trashIndex < trashCount) { // 如果还有垃圾
+                trashType = trashList[trashIndex].type; // 获取垃圾类型
+                trash.src = trashList[trashIndex].src; // 获取垃圾图片路径
+                trashIndex++; // 垃圾索引加一
+                trash.style.top = "200px";
+            } else { // 如果没有垃圾了
+                endGame(); // 结束游戏
+            }
+        }
+
+        // 开始游戏
+        function startGame() {
+            gameStarted = true; // 设置游戏开始为真
+            start.style.display = "none"; // 隐藏开始按钮
+            pause.style.display = "block"; // 显示暂停按钮
+            generateTrash(); // 生成一个随机的垃圾
+            gameTimer = setInterval(updateTimer, 1000); // 设置游戏计时器
+            bgm.play(); // 播放            // 播放背景音乐
+        }
+
+        // 暂停游戏
+        function pauseGame() {
+            gamePaused = true; // 设置游戏暂停为真
+            pause.style.display = "none"; // 隐藏暂停按钮
+            resume.style.display = "block"; // 显示重新开始按钮
+            clearInterval(gameTimer); // 清除游戏计时器
+            bgm.pause(); // 暂停背景音乐
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            gamePaused = false; // 设置游戏暂停为假
+            // restart.style.display = "none"; // 隐藏重新开始按钮
+            clearInterval(gameTimer); // 清除之前的计时器
+
+            scoreValue = 0; // 重置分数
+            score.innerHTML = "分数：" + scoreValue; // 更新分数显示
+            timerValue = 60; // 重置时间
+            timer.innerHTML = "时间：" + timerValue; // 更新时间显示
+            trashIndex = 0; // 重置垃圾索引
+            trashList = shuffle(trashList); // 重新打乱垃圾列表
+            generateTrash(); // 生成一个随机的垃圾
+            gameTimer = setInterval(updateTimer, 1000); // 设置游戏计时器
+            bgm.play(); // 播放背景音乐
+        }
+ // 恢复游戏
+    function resumeGame() {
+        gamePaused = false; // 设置游戏暂停为假
+        resume.style.display = "none"; // 隐藏恢复按钮
+        pause.style.display = "block"; // 显示暂停按钮
+        gameTimer = setInterval(updateTimer, 1000); // 设置游戏计时器
+        bgm.play(); // 播放背景音乐
+    }
+        // // 结束游戏
+
+         function endGame() {
+        gameEnded = true; // 设置游戏结束为真
+        pause.style.display = "none"; // 隐藏暂停按钮
+        restart.style.display = "block"; // 显示重新开始按钮
+        trash.style.display = "none"; // 隐藏垃圾
+        clearInterval(gameTimer); // 清除游戏计时器
+        bgm.pause(); // 暂停背景音乐
+        finalScore.innerHTML = "您的分数是：" + scoreValue; // 更新最终分数显示
+        overlay.style.display = "block"; // 显示遮罩层
+        popup.style.display = "block"; // 显示弹出层
+    }
+
+        // 更新计时器
+        function updateTimer() {
+            timerValue--; // 时间减一
+            timer.innerHTML = "时间：" + timerValue; // 更新时间显示
+            if (timerValue === 0) { // 如果时间为零
+                endGame(); // 结束游戏
+            }
+        }
+
+    function checkTrash(bin) {
+        if (trashType === trashTypes[bin.id.slice(3)-1]) { // 如果垃圾类型和垃圾桶类型相同
+            scoreValue += 3; // 分数加三
+            score.innerHTML = "分数：" + scoreValue; // 更新分数显示
+            correct.play(); // 播放正确音效
+        } else { // 如果垃圾类型和垃圾桶类型不同
+            scoreValue -= 1; // 分数减一
+            score.innerHTML = "分数：" + scoreValue; // 更新分数显示
+            wrong.play(); // 播放错误音效
+        }
+
+        trash.style.display = "none"; // 隐藏垃圾
+
+        // setTimeout(function () {
+        //     trash.style.display = "block"; // 显示垃圾
+        //     trash.style.left = "50%"; // 还原垃圾的水平位置
+        //     trash.style.top = "120px"; // 还原垃圾的垂直位置
+        //     generateTrash(); // 生成一个随机的垃圾
+        // }, 1000);
+        setTimeout(function () {
+    trash.style.display = "block"; // 显示垃圾
+}, 500);
+setTimeout(function () {
+    trash.style.left = "50%"; // 还原垃圾的水平位置
+    trash.style.top = "200px"; // 还原垃圾的垂直位置
+    generateTrash(); // 生成一个随机的垃圾
+}, 500);
+
+    }
+
+
+        // 添加垃圾的拖动事件
+        trash.addEventListener("mousedown", function(event) {
+            if (gameStarted && !gamePaused && !gameEnded) { // 如果游戏开始且没有暂停或结束
+                trashDragged = true; // 设置垃圾被拖动为真
+                var offsetX = event.clientX - trash.offsetLeft; // 计算鼠标和垃圾的水平偏移量
+                var offsetY = event.clientY - trash.offsetTop; // 计算鼠标和垃圾的垂直偏移量
+                document.addEventListener("mousemove", function(event) {
+                    if (trashDragged) { // 如果垃圾被拖动
+                        trash.style.left = event.clientX - offsetX + "px"; // 更新垃圾的水平位置
+                        trash.style.top = event.clientY - offsetY + "px"; // 更新垃圾的垂直位置
+                    }
+                });
+                document.addEventListener("mouseup", function(event) {
+                    if (trashDragged) { // 如果垃圾被拖动
+                        trashDragged = false; // 设置垃圾被拖动为假
+                        var trashRect = trash.getBoundingClientRect(); // 获取垃圾的矩形区域
+                        var bin1Rect = bin1.getBoundingClientRect(); // 获取垃圾桶1的矩形区域
+                        var bin2Rect = bin2.getBoundingClientRect(); // 获取垃圾桶2的矩形区域
+                        var bin3Rect = bin3.getBoundingClientRect(); // 获取垃圾桶3的矩形区域
+                        var bin4Rect = bin4.getBoundingClientRect(); // 获取垃圾桶4的矩形区域
+                        if (trashRect.right > bin1Rect.left && trashRect.left < bin1Rect.right && trashRect.bottom > bin1Rect.top && trashRect.top < bin1Rect.bottom) { // 如果垃圾和垃圾桶1重叠
+                            checkTrash(bin1); // 检查垃圾是否拖入正确的垃圾桶
+                        } else if (trashRect.right > bin2Rect.left && trashRect.left < bin2Rect.right && trashRect.bottom > bin2Rect.top && trashRect.top < bin2Rect.bottom) { // 如果垃圾和垃圾桶2重叠
+                            checkTrash(bin2); // 检查垃圾是否拖入正确的垃圾桶
+                        } else if (trashRect.right > bin3Rect.left && trashRect.left < bin3Rect.right && trashRect.bottom > bin3Rect.top && trashRect.top < bin3Rect.bottom) { // 如果垃圾和垃圾桶3重叠
+                            checkTrash(bin3); // 检查垃圾是否拖入正确的垃圾桶
+                        } else if (trashRect.right > bin4Rect.left && trashRect.left < bin4Rect.right && trashRect.bottom > bin4Rect.top && trashRect.top < bin4Rect.bottom) { // 如果垃圾和垃圾桶4重叠
+                            checkTrash(bin4); // 检查垃圾是否拖入正确的垃圾桶
+                        } else { // 如果垃圾没有和任何垃圾桶重叠
+                            trash.style.left = "50%"; // 还原垃圾的水平位置
+                            trash.style.top = "200px"; // 还原垃圾的垂直位置
+                        }
+                    }
+                });
+            }
+        });
+
+        // 添加开始按钮的点击事件
+        start.addEventListener("click", function() {
+            startGame(); // 开始游戏
+        });
+
+        // 添加暂停按钮的点击事件
+        pause.addEventListener("click", function() {
+            pauseGame(); // 暂停游戏
+              resume.style.display = "block";
+        });
+
+        // 添加重新开始按钮的点击事件
+        restart.addEventListener("click", function() {
+            restartGame(); // 重新开始游戏
+        });
+            resume.addEventListener("click", function() {
+        resumeGame(); // 恢复游戏
+    });
+            // 添加关闭按钮的点击事件
+        close.addEventListener("click", function() {
+        overlay.style.display = "none"; // 隐藏遮罩层
+        popup.style.display = "none"; // 隐藏弹出层
+    });
+
+    </script>
+</body>
+</html>
+
